@@ -1,10 +1,8 @@
-import sys
-
 from g_python.gextension import Extension
 from g_python.hmessage import Direction
 from g_python.hparsers import HEntity
-from os import system
 import datetime
+import sys
 
 extension_info = {
     "title": "User logger",
@@ -12,35 +10,42 @@ extension_info = {
     "version": "1.0",
     "author": "Sigm4"
 }
-ext = Extension(extension_info, sys.argv)
+
+ext = Extension(extension_info, sys.argv, silent=True)
 ext.start()
 
-system("clear")
-print("{}LOGGING USERS{}".format('-' * 78, '-' * 78))
+print("\n----- LOGGING USERS -----")
 entities = []
 
-def addUsers(message):
-  entities.extend(HEntity.parse(message.packet))
-  printEntities()
 
-'''
-def removeUser(message):
-  playerIndex = int(message.packet.read_string())
-  global entities
-  entities = list(filter(lambda entity: entity.index == playerIndex, entities))
-  printEntities()
-'''
+def add_users(message):
+    entities.extend(HEntity.parse(message.packet))
+    print_entities()
 
-def clearUsers(_):
-  entities.clear()
-  printEntities()
 
-def printEntities():
-  print(list(map(lambda entity: entity.name, entities)))
-  now = datetime.datetime.now()
-  print(f"{now.day}/{now.month}/{now.year} - {now.hour}:{now.minute}")
+# def removeUser(message):
+#   playerIndex = int(message.packet.read_string())
+#   global entities
+#   entities = list(filter(lambda entity: entity.index == playerIndex, entities))
+#   printEntities()
 
-ext.intercept(Direction.TO_CLIENT, addUsers, 'Users')
+
+def clear_users(_):
+    entities.clear()
+    date()
+    print("List of users cleared")
+
+
+def print_entities():
+    date()
+    print(list(map(lambda entity: entity.name, entities)))
+
+
+def date():
+    now = datetime.datetime.now().strftime('%d-%m-%Y - %H:%M')
+    print(now, end="\n↪ ")
+
+
+ext.intercept(Direction.TO_CLIENT, add_users, 'Users')
 # ext.intercept(Direction.TO_CLIENT, removeUser, 'UserRemove')
-ext.intercept(Direction.TO_CLIENT, clearUsers, 'RoomReady')
-
+ext.intercept(Direction.TO_CLIENT, clear_users, 'RoomReady')
