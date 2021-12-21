@@ -4,6 +4,7 @@ from g_python.gextension import Extension
 from g_python.hmessage import Direction
 from g_python.hparsers import HEntity
 from os import system
+import datetime
 
 extension_info = {
     "title": "User logger",
@@ -36,6 +37,8 @@ def clearUsers(_):
 
 def printEntities():
   print(list(map(lambda entity: entity.name, entities)))
+  now = datetime.datetime.now()
+  print(f"{now.day}/{now.month}/{now.year} - {now.hour}:{now.minute}")
 
 ext.intercept(Direction.TO_CLIENT, addUsers, 'Users')
 # ext.intercept(Direction.TO_CLIENT, removeUser, 'UserRemove')
